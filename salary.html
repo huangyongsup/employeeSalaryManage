@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body{
+            background:white;
+        }
+
+        table, th, td{
+            margin: 0 auto;
+            border: 2px solid black;
+            border-collapse: collapse;
+            text-align: center;
+            padding: 8px;
+        }
+
+        tr:nth-child(even){
+            background: silver;
+        }
+
+        tr:hover{
+            background: red;
+        }
+
+        button{
+            position: relative;
+            left: 230px;
+            padding: 10px 50px;
+            margin: 10px 80px;
+        }
+
+    </style>
+</head>
+<body>
+<table></table>
+<button id="previousPage">上一页</button><button id="nextPage">下一页</button>
+<script>
+    const tableName = "student";
+    const pageSize = 7;
+    let fragment = document.createDocumentFragment();
+    let table = document.getElementsByTagName("table")[0];
+    let previousPage = document.getElementById("previousPage");
+    let nextPage = document.getElementById("nextPage");
+    let tableHeadArray = getTableHead();
+
+    let pageCount = 0;
+    let currentPage = 1;
+    let jsonResult = null;
+    let jsonResultLen = 0;
+    showTable();
+
+    function getTableHead(){
+        let result = getRequest("php/getProcess.php?method=getTableHead", "tableName", tableName);
+        if(result){
+            let headJsonResult = JSON.parse(result);
+            let tableHeadArray = [];
+            for(let i = 0; i < headJsonResult.length; ++i){
+               tableHeadArray.push(headJsonResult[i]["COLUMN_NAME"])
+            }
+            return tableHeadArray;
+        }
+    }
+
+    function showTable(){
+        let result = getRequest("php/getProcess.php?method=getContent", "tableName", tableName);
+        if(result){
+            jsonResult = JSON.parse(result);
+            jsonResultLen = jsonResult.length;
+            pageCount = Math.ceil(jsonResultLen / pageSize);
+            createTableHead();
+            createTableBody(currentPage);
+            table.appendChild(fragment);
+        }
+    }
+
+    function createTableHead(){
+        let tableHead = document.createElement("thead");
+        let tr = document.createElement("tr");
+        let tableHeadStr = "<input type='checkbox' id='select-all' onclick='selectAll()'/>";
+
+        for(let i = 0; i < tableHeadArray.length; ++i){
+            tableHeadStr += "<th>" +tableHeadArray[i] + "</th>";
+        }
+        tableHeadStr += "<th colspan='2'><a href='javascript:;' onclick='batchDelete()'>批量删除</a></th>";
+        tr.innerHTML = tableHeadStr;
+        tableHead.appendChild(tr);
+        fragment.appendChild(tableHead);
+    }
+
+    function createTableBody(currentPage){
+        let tableBody = document.createElement("tbody");
+        for(let i = (currentPage - 1) * pageSize; i < currentPage * pageSize && i < jsonResultLen; ++i){
+            let tr = document.createElement("tr");
+            let tableBodyStr = "<input type='checkbox' />";
+            let tdLen = Object.keys(jsonResult[i]).length;
+            for(let j = 0; j < tdLen; ++j){
+                tableBodyStr += "<td>" + jsonResult[i][tableHeadArray[j]] + "</td>";
+            }
+            tableBodyStr += "<td><a href='javascript:;' onclick='deleteNode(this.parentElement.parentElement.id)'/>删除</td><td>修改</td>";
+            tr.innerHTML = tableBodyStr;
+            tr.id = jsonResult[i].id;
+            tableBody.appendChild(tr);
+        }
+        fragment.appendChild(tableBody);
+    }
+
+
+    previousPage.onclick = function(){
+        if(currentPage > 1){
+            --currentPage;
+            paging(currentPage);
+        }else{
+            alert("这已经是第一页了！");
+        }
+    };
+
+    nextPage.onclick = function(){
+        if(currentPage < pageCount){
+            ++currentPage;
+            paging(currentPage);
+        }else{
+            alert("这已经是最后一页了！");
+        }
+    };
+
+    function paging(currentPage){
+        let del = document.getElementsByTagName("tbody")[0];
+        table.removeChild(del);
+        createTableBody(currentPage);
+        table.appendChild(fragment);
+
+    }
+
+    function addURLParam(url, name, value){
+        url += (url.indexOf("?") === -1 ? "?" : "&");
+        url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
+        return url;
+    }
+
+    function getRequest(url, name, value){
+        let xhr = new XMLHttpRequest();
+        url = addURLParam(url, name, value);
+        xhr.open("get", url, false);
+        xhr.send(null);
+        if(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304){
+            return xhr.responseText;
+        }else{
+            return false;
+        }
+    }
+
+    function postRequest(url, postData){
+        let xhr = new XMLHttpRequest();
+        xhr.open("post", url, false);
+        xhr.send(postData);
+        if(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304){
+            return xhr.responseText;
+        }else{
+            return false;
+        }
+    }
+
+    function selectAll(){
+        let checkBox = document.querySelectorAll("input[type='checkbox']");
+        if(checkBox[0].checked === true){
+            for(let index = 0; index < checkBox.length; ++index){
+                if(checkBox[index].checked === false){
+                    checkBox[index].checked = true;
+                }
+            }
+        }else{
+            for(let i = 0; i < checkBox.length; ++i){
+                checkBox[i].checked = false;
+            }
+        }
+    }
+
+    function batchDelete(){
+        let batchNode = document.querySelectorAll("input[type=checkbox]");
+        let batchNodeArr = [];
+        for(let i = 0; i < batchNode.length; ++i){
+            if(batchNode[i].id !== "select-all" && batchNode[i].checked === true){
+                batchNodeArr.push(batchNode[i].parentElement.id);
+            }
+        }
+        if(batchNodeArr.length > 0)
+        {
+            deleteNode(batchNodeArr);
+        }else{
+            alert("请选中所要删除的项");
+        }
+    }
+
+    function deleteNode(batchNodeArr){
+       if(typeof batchNodeArr !== "object"){
+           batchNodeArr = new Array(batchNodeArr);
+       }
+       let methodType = {method : "batchDelete"};
+       batchNodeArr.push(methodType);
+       let batchNodeJson = JSON.stringify(batchNodeArr);
+       let result = postRequest("php/getProcess.php", batchNodeJson);
+       console.log(result);
+    }
+
+</script>
+</body>
+</html>

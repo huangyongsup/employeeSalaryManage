@@ -1,0 +1,54 @@
+@charset "utf-8";
+
+body{
+    background: #282e33;
+    font-family: 'Open Sans', Arial, sans-serif;
+    color: silver;
+}
+
+li {
+    display: block;
+    width: 150px;
+    text-align: center;
+    margin: 2px 20px;
+    border: 2px solid #a1a1a1;
+    color: white;
+    background: #b5cd60;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.5s ease-in-out;
+}
+
+a {
+    color: white;
+    background: #b5cd60;
+    cursor: pointer;
+    transition: background 0.5s ease-in-out;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    height: 100%;
+    width: 100%;
+}
+
+a:hover, button:hover {
+    background: #16aa56;
+}
+
+button{
+    margin: 10px 20px;
+}
+
+iframe{
+    float: right;
+    height: 450px;
+    width: 1000px;
+}
+
+.nav{
+    margin: 20px 5px;
+}
+
+.signOut{
+    float: right;
+}
