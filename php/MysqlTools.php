@@ -5,7 +5,7 @@ class MysqlTools
     private $pdo;
     private $username = 'root';
     private $password = 'root';
-    private $dsn = 'mysql:host=localhost;dbname=homework';
+    private $dsn = 'mysql:host=localhost;dbname=guestbook';
 
     //构造函数
     function __construct()

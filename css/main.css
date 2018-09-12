@@ -1,54 +1,61 @@
-@charset "utf-8";
-
 body{
-    background: #282e33;
-    font-family: 'Open Sans', Arial, sans-serif;
-    color: silver;
+    background:white;
 }
 
-li {
-    display: block;
-    width: 150px;
+table, th, td{
+    margin: 0 auto;
+    border: 2px solid black;
+    border-collapse: collapse;
     text-align: center;
-    margin: 2px 20px;
-    border: 2px solid #a1a1a1;
-    color: white;
-    background: #b5cd60;
+    padding: 8px;
+}
+
+tr:nth-child(even){
+    background: silver;
+}
+
+tr:hover{
+    background: red;
+}
+
+#previousPage, #nextPage{
+    position: absolute;
+    left: 200px;
+    top: 400px;
+    padding: 10px 50px;
+    margin: 10px 80px;
+}
+
+#nextPage{
+    left: 450px;
+}
+button{
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.5s ease-in-out;
 }
 
-a {
-    color: white;
-    background: #b5cd60;
-    cursor: pointer;
-    transition: background 0.5s ease-in-out;
-    text-decoration: none;
+#dialog, #add-dialog{
+    display: none;
+    position: absolute;
+    left: 200px;
+    top: 100px;
+    /*background-color: rgba(0, 0, 0, 0.3);*/
+    background: silver;
+    width: 500px;
+    height: 300px;
+}
+
+
+
+#confirmBtn, #add-btn{
     display: block;
-    padding: 10px;
-    height: 100%;
-    width: 100%;
+    float: left;
+    padding: 15px;
 }
 
-a:hover, button:hover {
-    background: #16aa56;
-}
-
-button{
-    margin: 10px 20px;
-}
-
-iframe{
+#cancelBtn, #cancel-btn{
+    display: block;
     float: right;
-    height: 450px;
-    width: 1000px;
-}
-
-.nav{
-    margin: 20px 5px;
-}
-
-.signOut{
-    float: right;
+    padding: 20px;
 }

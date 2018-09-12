@@ -8,12 +8,11 @@
 <body>
 <table></table>
 <button id="previousPage">上一页</button><button id="nextPage">下一页</button>
-<div id="dialog"></div>
 <script>
-    const tableName = "salary";
+    const tableName = "salary_v";
     const primaryKey = "Eno";
     const url = "php/requestProcess.php";
-    const pageSize = 7;
+    const pageSize = 3;
     const table = document.getElementsByTagName("table")[0];
     const dialog = document.querySelector("#dialog");
     const previousPage = document.getElementById("previousPage");
@@ -35,7 +34,7 @@
             let headJsonResult = JSON.parse(result);
             let tableHeadArray = [];
             for(let i = 0, len = headJsonResult.length; i < len; ++i){
-               tableHeadArray.push(headJsonResult[i]["COLUMN_NAME"])
+                tableHeadArray.push(headJsonResult[i]["COLUMN_NAME"])
             }
             return tableHeadArray;
         }
@@ -58,11 +57,10 @@
     function createTableHead(){
         let tableHead = document.createElement("thead");
         let tr = document.createElement("tr");
-        let tableHeadStr = "<th><input type='checkbox' id='select-all' onclick='selectAll()'/></th>";
+        let tableHeadStr = "";
         for(let i = 0; i < tableHeadArray.length; ++i){
             tableHeadStr += "<th>" +tableHeadArray[i] + "</th>";
         }
-        tableHeadStr +=  "<th colspan='2'><button onclick='batchDelete()'>批量删除</button></th>";
         tr.innerHTML = tableHeadStr;
         tableHead.appendChild(tr);
         fragment.appendChild(tableHead);
@@ -72,13 +70,11 @@
         let tableBody = document.createElement("tbody");
         for(let i = (currentPage - 1) * pageSize; i < currentPage * pageSize && i < jsonResultLen; ++i){
             let tr = document.createElement("tr");
-            let tableBodyStr = "<td><input type='checkbox' /></td>";
+            let tableBodyStr = "";
             let tdLen = Object.keys(jsonResult[i]).length;
             for(let j = 0; j < tdLen; ++j){
                 tableBodyStr += "<td>" + jsonResult[i][tableHeadArray[j]] + "</td>";
             }
-            tableBodyStr += "<td><button onclick='deleteNode(this.parentElement.parentElement.id)'>删除</button></td>" +
-                "<td><button onclick='alterNode(this.parentElement.parentElement.id)'>修改</button></td>";
             tr.innerHTML = tableBodyStr;
             tr.id = jsonResult[i][primaryKey];
             tableBody.appendChild(tr);
@@ -220,13 +216,13 @@
                                 let optValue = "";
                                 if(option.hasAttribute){
                                     optValue = (option.hasAttribute("value") ?
-                                                option.value : option.text);
+                                        option.value : option.text);
                                 }else{
                                     optValue = (option.attributes["value"].specified ?
-                                                option.value : option.text);
+                                        option.value : option.text);
                                 }
                                 parts.push(encodeURIComponent(field.name) + "=" +
-                                            encodeURIComponent(optValue));
+                                    encodeURIComponent(optValue));
                             }
                         }
                     }
@@ -245,7 +241,7 @@
                 default:
                     if(field.name.length){
                         parts.push(encodeURIComponent(field.name) + "=" +
-                                    encodeURIComponent(field.value));
+                            encodeURIComponent(field.value));
                     }
                     break;
             }
