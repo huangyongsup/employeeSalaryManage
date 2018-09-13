@@ -6,7 +6,6 @@
     <link type="text/css" rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
-<button id="add">添加</button>
 <table></table>
 <button id="previousPage">上一页</button><button id="nextPage">下一页</button>
 <div id="dialog">
@@ -17,7 +16,7 @@
     </div>
 </div>
 <script>
-    const tableName = "attendance";
+    const tableName = "deduction";
     const primaryKey = "Eno";
     const url = "php/requestProcess.php";
     const pageSize = 3;
@@ -107,12 +106,11 @@
         let tableBody = document.createElement("tbody");
         for(let i = (currentPage - 1) * pageSize; i < currentPage * pageSize && i < jsonResultLen; ++i){
             let tr = document.createElement("tr");
-            let tableBodyStr = "";
+            let tableBodyStr = "<td><input type='checkbox' /></td>";
             let tdLen = Object.keys(jsonResult[i]).length;
             for(let j = 0; j < tdLen; ++j){
                 tableBodyStr += "<td>" + jsonResult[i][tableHeadArray[j]] + "</td>";
             }
-            tableBodyStr += "<td><button onclick='alterNode(this.parentElement.parentElement.id)'>修改</button></td>";
             tr.innerHTML = tableBodyStr;
             tr.id = jsonResult[i][primaryKey];
             tableBody.appendChild(tr);

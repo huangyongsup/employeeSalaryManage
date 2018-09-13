@@ -65,31 +65,36 @@ function alterDataFun()
 {
     global $mysqlTools;
     global $tableName;
-    $queryStr = "UPDATE" . $tableName . "SET";
+    $queryStr = "UPDATE " . $tableName . " SET ";
     if ($tableName == "salary") {
-        $queryStr .= "Sbase={$_POST['Sbase']}, Sallowance={$_POST['Sallowance']},
-        Sreward={$_POST['Sreward']} where Eno={$_POST['Eno']} and Stime={$_POST['Stime']}";
+        $queryStr .= "Sbase={$_POST['Sbase']}, Sallowance={$_POST['Sallowance']},"
+        . "Sreward={$_POST['Sreward']} where Eno='{$_POST['Eno']}' and Stime='{$_POST['Stime']}'";
     } elseif ($tableName == "employee") {
-        $queryStr .= "Ename={$_POST['Ename']}, Esex={$_POST['Esex']}, Ebirth={$_POST['Ebirth']},
-        Eduty={$_POST['Eduty']}, Eedu={$_POST['Eedu']}, Etel={$_POST['Etel']},Eadr={$_POST['Eadr']},
-        Eid={$_POST['Eid']},Dno={$_POST['Dno']}, WHERE Eno={$_POST['Eno']}";
+        $queryStr .= "Ename='{$_POST['Ename']}', Esex='{$_POST['Esex']}', Ebirth='{$_POST['Ebirth']}',"
+        . "Eduty='{$_POST['Eduty']}', Eedu='{$_POST['Eedu']}', Etel='{$_POST['Etel']}',Eadr='{$_POST['Eadr']}',"
+        . "Eid='{$_POST['Eid']}',Dno='{$_POST['Dno']}' WHERE Eno='{$_POST['Eno']}'";
     } elseif ($tableName == "attendance") {
-        $queryStr .= "Atime={$_POST['Atime']}, Aovertime={$_POST['Aovertime']},
-        Akuang={$_POST['Akuang']}, Alate={$_POST['Alate']} WHERE Eno={$_POST['Eno']} AND Atime={$_POST['Atime']}";
+        $queryStr .= "Atime='{$_POST['Atime']}', Aovertime={$_POST['Aovertime']},"
+        . "Akuang={$_POST['Akuang']}, Alate={$_POST['Alate']} WHERE Eno='{$_POST['Eno']}' AND Atime='{$_POST['Atime']}'";
     }
-
     if ($mysqlTools->executeDML($queryStr)) {
         $query = "";
         if ($tableName == "salary") {
-            $query = "CALL UPDATE_DEDUCTION({$_POST['Eno']}, {$_POST['Stime']})";
+            $query = "CALL UPDATE_DEDUCTION('{$_POST['Eno']}','{$_POST['Stime']}')";
         } elseif ($tableName == "attendance") {
-            $query = "CALL UPDATE_DEDUCTION({$_POST['Eno']},{$_POST['Atime']})";
+            $query = "CALL UPDATE_DEDUCTION('{$_POST['Eno']}','{$_POST['Atime']}')";
         }
-        if ($mysqlTools->executeDML($query)) {
+        if ($query){
+            if($mysqlTools->executeDML($query)){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
             return true;
-        } else {
-            return false;
         }
+    }else{
+        return false;
     }
 }
 
@@ -97,31 +102,35 @@ function addDataFun()
 {
     global $mysqlTools;
     global $tableName;
-    $queryStr = "INSERT INTO" . $tableName . "VALUES(";
+    $queryStr = "INSERT INTO " . $tableName . " VALUES";
     if ($tableName == "salary") {
-        $queryStr .= "{$_POST['Sbase']},{$_POST['Sallowance']},
-      {$_POST['Sreward']})";
+        $queryStr .= "('{$_POST['Eno']}','{$_POST['Stime']}',{$_POST['Sbase']},{$_POST['Sallowance']},{$_POST['Sreward']})";
     } elseif ($tableName == "employee") {
-        $queryStr .= "{$_POST['Eno']},{$_POST['Ename']},{$_POST['Esex']},{$_POST['Ebirth']},
-        {$_POST['Eduty']},{$_POST['Eedu']},{$_POST['Etel']},{$_POST['Eadr']},
-        {$_POST['Eid']},{$_POST['Dno']})";
+        $queryStr .= "('{$_POST['Eno']}','{$_POST['Ename']}','{$_POST['Esex']}','{$_POST['Ebirth']}','{$_POST['Eduty']}',"
+        ."'{$_POST['Eedu']}','{$_POST['Etel']}','{$_POST['Eadr']}','{$_POST['Eid']}','{$_POST['Dno']}')";
     } elseif ($tableName == "attendance") {
-        $queryStr .= "{$_POST['Eno']},{$_POST['Atime']}, {$_POST['Aovertime']},
-        {$_POST['Akuang']},{$_POST['Alate']}";
+        $queryStr .= "('{$_POST['Eno']}','{$_POST['Atime']}', {$_POST['Aovertime']},{$_POST['Akuang']},{$_POST['Alate']})";
     }
 
     if ($mysqlTools->executeDML($queryStr)) {
         $query = "";
         if ($tableName == "salary") {
-            $query = "CALL UPDATE_DEDUCTION({$_POST['Eno']}, {$_POST['Stime']})";
+            $query = "CALL IN_DEDUCTION('{$_POST['Eno']}','{$_POST['Stime']}')";
         } elseif ($tableName == "attendance") {
-            $query = "CALL UPDATE_DEDUCTION({$_POST['Eno']},{$_POST['Atime']})";
+            $query = "CALL IN_DEDUCTION('{$_POST['Eno']}','{$_POST['Atime']}')";
         }
-        if ($mysqlTools->executeDML($query)) {
+
+        if ($query){
+            if($mysqlTools->executeDML($query)){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
             return true;
-        } else {
-            return false;
         }
+    }else{
+        return false;
     }
 }
 
