@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link type="text/css" rel="stylesheet" href="css/main.css"/>
+    <link type="text/css" rel="stylesheet" href="css/table.css"/>
 </head>
 <body>
 <button id="add">添加</button>
@@ -17,9 +17,18 @@
     </div>
 </div>
 <script>
-    const tableName = "employee";
-    const primaryKey = "Eno";
     const url = "php/requestProcess.php";
+    const tableName = "employee";
+    (function(){
+        let currentURL = addURLParam(url, "method", "isLogin");
+        currentURL = addURLParam(currentURL, "tableName", tableName);
+        let jsonResult = JSON.parse(getRequest(currentURL));
+        if(jsonResult === "unloaded"){
+            location.assign("login.html");
+        }
+    })();
+
+    const primaryKey = "Eno";
     const pageSize = 3;
     const table = document.getElementsByTagName("table")[0];
     const dialog = document.querySelector("#dialog");
@@ -80,9 +89,11 @@
     function showTable(){
         let currentURL = addURLParam(url, "method", "getContent");
         currentURL = addURLParam(currentURL, "tableName", tableName);
-        let result = getRequest(currentURL);
-        if(result){
-            jsonResult = JSON.parse(result);
+        jsonResult = JSON.parse(getRequest(currentURL));
+        if(jsonResult === "unloaded"){
+            alert("请先登陆");
+            location.assign("login.html");
+        }else {
             jsonResultLen = jsonResult.length;
             pageCount = Math.ceil(jsonResultLen / pageSize);
             createTableHead();

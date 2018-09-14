@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link type="text/css" rel="stylesheet" href="css/main.css"/>
+    <link type="text/css" rel="stylesheet" href="css/table.css"/>
 </head>
 <body>
 <button id="add">添加</button>
@@ -17,9 +17,18 @@
     </div>
 </div>
 <script>
-    const tableName = "salary";
-    const primaryKey = "Eno";
     const url = "php/requestProcess.php";
+    const tableName = "salary";
+    (function(){
+        let currentURL = addURLParam(url, "method", "isLogin");
+        currentURL = addURLParam(currentURL, "tableName", tableName);
+        let jsonResult = JSON.parse(getRequest(currentURL));
+        if(jsonResult === "unloaded"){
+            location.assign("login.html");
+        }
+    })();
+
+    const primaryKey = "Eno";
     const pageSize = 3;
     const table = document.getElementsByTagName("table")[0];
     const dialog = document.querySelector("#dialog");

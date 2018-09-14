@@ -6,6 +6,7 @@
     <link type="text/css" rel="stylesheet" href="css/table.css"/>
 </head>
 <body>
+<button id="add">添加</button>
 <table></table>
 <button id="previousPage">上一页</button><button id="nextPage">下一页</button>
 <div id="dialog">
@@ -16,7 +17,7 @@
     </div>
 </div>
 <script>
-    const tableName = "deduction";
+    const tableName = "employee";
     const url = "php/requestProcess.php";
     (function(){
         let currentURL = addURLParam(url, "method", "isLogin");
@@ -88,9 +89,11 @@
     function showTable(){
         let currentURL = addURLParam(url, "method", "getContent");
         currentURL = addURLParam(currentURL, "tableName", tableName);
-        let result = getRequest(currentURL);
-        if(result){
-            jsonResult = JSON.parse(result);
+        jsonResult = JSON.parse(getRequest(currentURL));
+        if(jsonResult === "unloaded"){
+            alert("请先登陆");
+            location.assign("login.html");
+        }else {
             jsonResultLen = jsonResult.length;
             pageCount = Math.ceil(jsonResultLen / pageSize);
             createTableHead();
@@ -102,10 +105,11 @@
     function createTableHead(){
         let tableHead = document.createElement("thead");
         let tr = document.createElement("tr");
-        let tableHeadStr = "";
+        let tableHeadStr = "<th><input type='checkbox' id='select-all' onclick='selectAll()'/></th>";
         for(let i = 0; i < tableHeadArray.length; ++i){
             tableHeadStr += "<th>" +tableHeadArray[i] + "</th>";
         }
+        tableHeadStr +=  "<th colspan='2'><button onclick='batchDelete()'>批量删除</button></th>";
         tr.innerHTML = tableHeadStr;
         tableHead.appendChild(tr);
         fragment.appendChild(tableHead);
@@ -115,11 +119,13 @@
         let tableBody = document.createElement("tbody");
         for(let i = (currentPage - 1) * pageSize; i < currentPage * pageSize && i < jsonResultLen; ++i){
             let tr = document.createElement("tr");
-            let tableBodyStr = "";
+            let tableBodyStr = "<td><input type='checkbox' /></td>";
             let tdLen = Object.keys(jsonResult[i]).length;
             for(let j = 0; j < tdLen; ++j){
                 tableBodyStr += "<td>" + jsonResult[i][tableHeadArray[j]] + "</td>";
             }
+            tableBodyStr += "<td><button onclick='deleteNode(this.parentElement.parentElement.id)'>删除</button></td>" +
+                "<td><button onclick='alterNode(this.parentElement.parentElement.id)'>修改</button></td>";
             tr.innerHTML = tableBodyStr;
             tr.id = jsonResult[i][primaryKey];
             tableBody.appendChild(tr);
@@ -236,15 +242,15 @@
             }
             para = "method=addData&tableName=" + tableName;
         }
-        dialogForm.innerHTML = dialogStr;
-        let spanArr = document.getElementsByTagName("span");
-        for(let i = 0, len = spanArr.length; i < len; ++i){
-            spanArr[i].style.margin = "15px";
-        }
-        dialog.style.display = "block";
-        confirmBtn.onclick = function(){
-            addData(para);
-        };
+            dialogForm.innerHTML = dialogStr;
+            let spanArr = document.getElementsByTagName("span");
+            for(let i = 0, len = spanArr.length; i < len; ++i){
+                spanArr[i].style.margin = "15px";
+            }
+            dialog.style.display = "block";
+            confirmBtn.onclick = function(){
+                addData(para);
+            };
     }
 
     function addData(para){

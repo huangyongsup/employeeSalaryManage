@@ -21,7 +21,7 @@ header('Content-Type:application/json;charset=UTF-8');
            echo json_encode($mysqlTools->executeDQL("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$tableName}'"));
            break;
         case 'getContent':
-           echo json_encode($mysqlTools->executeDQL("SELECT * FROM {$tableName}"));
+           echo json_encode(getContentFun());
            break;
         case 'deleteData':
             if(batchDelete()){
@@ -31,12 +31,8 @@ header('Content-Type:application/json;charset=UTF-8');
             }
             break;
         case 'login':
-            if(!empty($_POST['Eno']) && !empty($_POST['Mpassword'])){
-                if(check($_POST['Eno'], $_POST['Mpassword'])){
-                    echo json_encode("ture");
-                }else{
-                    return json_encode("false");
-                }
+            if(!empty($_POST['account']) && !empty($_POST['password'])){
+                echo json_encode(check($_POST['account'], $_POST['password']));
             }
             break;
         case 'alterData':
@@ -56,10 +52,43 @@ header('Content-Type:application/json;charset=UTF-8');
         case 'getRow':
             echo json_encode(getRowFun());
             break;
+        case 'signOut':
+            if(session_destroy()){
+                echo json_encode("session had been destroyed");
+            }else{
+                return false;
+            }
+            break;
+        case 'isLogin':
+            if(empty($_SESSION['account'])){
+                echo json_encode("unloaded");
+            }else{
+                echo json_encode("had loaded");
+            }
+            break;
         default:
-           echo Json_encode("nothing");
+           echo Json_encode("default case, got nothing");
            break;
        }
+
+function getContentFun()
+{
+    global $mysqlTools;
+    global $tableName;
+    if(!empty($_SESSION['account'])){
+        if($_SESSION['userType'] == "manager"){
+            return $mysqlTools->executeDQL("SELECT * FROM {$tableName}");
+        }else if($_SESSION['userType'] == "employee"){
+            return ($mysqlTools->executeDQL("SELECT * FROM {$tableName} WHERE Eno='{$_SESSION['account']}'") ?
+                $mysqlTools->executeDQL("SELECT * FROM {$tableName} WHERE Eno='{$_SESSION['account']}'") :
+                $mysqlTools->executeDQL("SELECT * FROM {$tableName} WHERE 工号='{$_SESSION['account']}'"));
+        }else{
+            return false;
+        }
+    } else{
+        return "unloaded";
+    }
+}
 
 function alterDataFun()
 {
@@ -173,17 +202,28 @@ function check($account, $password)
 {
     global $mysqlTools;
     global $tableName;
-    $query = "SELECT Mpassword FROM {$tableName} WHERE Eno='{$account}'";
-    $result = $mysqlTools->executeDQL($query);
-
-    if ($password == $result[0]['Mpassword'])
-    {
-        //session_start();
-        $_SESSION['account'] = $account;
-        $_SESSION['password'] = $password;
-        return true;
-    } else {
-        return false;
+    $queryManager = "SELECT Mpassword FROM Muser WHERE Eno='{$account}'";
+    $queryEmployee = "SELECT Epassword FROM Euser WHERE Eno='{$account}'";
+    if($result = $mysqlTools->executeDQL($queryManager)){
+        if ($password == $result[0]['Mpassword'])
+        {
+            $_SESSION['account'] = $account;
+            $_SESSION['password'] = $password;
+            $_SESSION['userType'] = "manager";
+            return "manager";
+        } else {
+            return false;
+        }
+    }elseif($result = $mysqlTools->executeDQL($queryEmployee)){
+        if ($password == $result[0]['Epassword'])
+        {
+            $_SESSION['account'] = $account;
+            $_SESSION['password'] = $password;
+            $_SESSION['userType'] = "employee";
+            return "employee";
+        } else {
+            return false;
+        }
     }
 }
 

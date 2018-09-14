@@ -8,15 +8,8 @@
 <body>
 <table></table>
 <button id="previousPage">上一页</button><button id="nextPage">下一页</button>
-<div id="dialog">
-    <form id="dialogForm"></form>
-    <div>
-        <button id="confirmBtn">确认</button>
-        <button id="cancelBtn">返回</button>
-    </div>
-</div>
 <script>
-    const tableName = "deduction";
+    const tableName = "salary_v";
     const url = "php/requestProcess.php";
     (function(){
         let currentURL = addURLParam(url, "method", "isLogin");
@@ -31,45 +24,16 @@
     const pageSize = 3;
     const table = document.getElementsByTagName("table")[0];
     const dialog = document.querySelector("#dialog");
-    const dialogForm = document.querySelector("#dialogForm");
     const previousPage = document.getElementById("previousPage");
     const nextPage = document.getElementById("nextPage");
-    const addBtn = document.getElementById("add");
-    const confirmBtn = document.getElementById("confirmBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
     let fragment = document.createDocumentFragment();
     let tableHeadArray = getTableHead();
+
     let pageCount = 0;
     let currentPage = 1;
     let jsonResult = null;
     let jsonResultLen = 0;
     showTable();
-
-    previousPage.onclick = function(){
-        if(currentPage > 1){
-            --currentPage;
-            paging(currentPage);
-        }else{
-            alert("这已经是第一页了！");
-        }
-    };
-
-    nextPage.onclick = function(){
-        if(currentPage < pageCount){
-            ++currentPage;
-            paging(currentPage);
-        }else{
-            alert("这已经是最后一页了！");
-        }
-    };
-
-    cancelBtn.onclick = function(){
-        dialog.style.display = "none";
-    };
-
-    addBtn.onclick = function(){
-        alterNode(null);
-    };
 
     function getTableHead(){
         let currentURL = addURLParam(url, "method", "getTableHead");
@@ -127,6 +91,24 @@
         fragment.appendChild(tableBody);
     }
 
+    previousPage.onclick = function(){
+        if(currentPage > 1){
+            --currentPage;
+            paging(currentPage);
+        }else{
+            alert("这已经是第一页了！");
+        }
+    };
+
+    nextPage.onclick = function(){
+        if(currentPage < pageCount){
+            ++currentPage;
+            paging(currentPage);
+        }else{
+            alert("这已经是最后一页了！");
+        }
+    };
+
     function paging(currentPage){
         let del = document.getElementsByTagName("tbody")[0];
         table.removeChild(del);
@@ -142,6 +124,7 @@
 
     function getRequest(url){
         let xhr = new XMLHttpRequest();
+        url = addURLParam(url);
         xhr.open("get", url, false);
         xhr.send(null);
         if(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304){
@@ -183,7 +166,7 @@
         let batchNodeArr = [];
         for(let i = 0; i < batchNode.length; ++i){
             if(batchNode[i].id !== "select-all" && batchNode[i].checked === true){
-                batchNodeArr.push(batchNode[i].parentElement.parentElement.id);
+                batchNodeArr.push(batchNode[i].parentElement.id);
             }
         }
         if(batchNodeArr.length > 0)
@@ -194,20 +177,19 @@
         }
     }
 
-    function deleteNode(primaryKeyValue){
-        let msg = "确定要删除编号为：" + primaryKeyValue + " 的员工数据吗？";
+    function deleteNode(primaryKey){
+        let msg = "确定要删除编号为：" + primaryKey + " 的员工数据吗？";
         if(confirm(msg) === true){
             let postData = "method=deleteData&tableName=" + tableName;
-            postData += "&" + encodeURIComponent("primaryKey") + "=" + encodeURIComponent(primaryKey);
-            if(Object.prototype.toString.call(primaryKeyValue) === "[object Array]"){
-                for(let i = 0, len = primaryKeyValue.length; i < len; ++i){
-                    postData += "&deleteData" + i + "=" + primaryKeyValue[i];
+            if(Object.prototype.toString.call(primaryKey) === "[object Array]"){
+                for(let i = 0, len = primaryKey.length; i < len; ++i){
+                    postData += "&deleteData" + i + "=" + primaryKey[i];
                 }
             }else{
-                postData += "&deleteData0=" + primaryKeyValue;
+                postData += "&deleteData0=" + primaryKey;
             }
-            let result = JSON.parse(postRequest(url, postData));
-            if(result === "true"){
+            let result = JSON.parse(postRequest("php/requestProcess.php", postData));
+            if(result){
                 refresh();
                 top.alert("删除成功");
             }else{
@@ -216,47 +198,12 @@
         }
     }
 
-    function alterNode(primaryKeyValue){
-        let dialogStr = "";
-        let para = null;
-        if(primaryKeyValue) {
-            let currentURL = addURLParam(url, "method", "getRow");
-            currentURL = addURLParam(currentURL, "tableName", tableName);
-            currentURL = addURLParam(currentURL, "primaryKey", primaryKey);
-            currentURL = addURLParam(currentURL, primaryKey, primaryKeyValue);
-            let result = JSON.parse(getRequest(currentURL));
-            for (let i = 0, len = tableHeadArray.length; i < len; ++i) {
-                dialogStr += "<span>" + tableHeadArray[i] + "</span>" + "<textarea name='"
-                    + tableHeadArray[i] + "'>" + result[0][tableHeadArray[i]] + "</textarea>";
-            }
-        }else{
-            for(let i = 0, len = tableHeadArray.length; i < len; ++i){
-                dialogStr +="<span>" + tableHeadArray[i] +"</span>"
-                    + "<input name='" + tableHeadArray[i] + "'/>";
-            }
-            para = "method=addData&tableName=" + tableName;
-        }
-        dialogForm.innerHTML = dialogStr;
-        let spanArr = document.getElementsByTagName("span");
-        for(let i = 0, len = spanArr.length; i < len; ++i){
-            spanArr[i].style.margin = "15px";
-        }
+    function alterNode(primaryKey){
         dialog.style.display = "block";
-        confirmBtn.onclick = function(){
-            addData(para);
-        };
-    }
+        let url = "php/requestProcess.php"
+        let result = JSON.parse(getRequest(url, "primaryKey", primaryKey));
 
-    function addData(para){
-        let postData = para || "method=alterData&tableName=" + tableName;
-        postData += ("&" + serialize(dialogForm));
-        if(JSON.parse(postRequest(url, postData)) === true){
-            alert("成功");
-            dialog.style.display = "none";
-            refresh();
-        }else{
-            alert("失败");
-        }
+        console.log(primaryKey);
     }
 
     function refresh(){

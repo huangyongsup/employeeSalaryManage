@@ -4,83 +4,19 @@
     <meta charset="UTF-8">
     <title>管理界面</title>
     <link rel="stylesheet" type="text/css" href="css/minireset.css"/>
-    <style>
-        body{
-            background: #282e33;
-            font-family: 'Open Sans', Arial, sans-serif;
-            color: silver;
-        }
-
-        li {
-            display: block;
-            width: 150px;
-            text-align: center;
-            margin: 2px 20px;
-            border: 2px solid #a1a1a1;
-            color: white;
-            background: #b5cd60;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.5s ease-in-out;
-        }
-
-        a{
-            color: white;
-            background: #b5cd60;
-            cursor: pointer;
-            transition: background 0.5s ease-in-out;
-            text-decoration: none;
-            display: block;
-            padding: 10px;
-            height: 100%;
-            width: 100%;
-        }
-
-        a:hover, button:hover {
-            background: #16aa56;
-        }
-
-        button{
-            border: 0;
-            border-radius: 5px;
-            background: red;
-            margin: 10px 20px;
-            cursor: pointer;
-            transition: background 0.5s ease-in-out;
-        }
-
-        button:hover{
-            background: red;
-        }
-
-        iframe{
-            float: right;
-            height: 480px;
-            width: 1010px;
-        }
-
-        .nav{
-            margin: 20px 5px;
-        }
-
-        .signOut{
-            float: right;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
 </head>
 <body>
-    <div class="signOut"><button>退出</button></div>
+    <div id="signOut"><button>退出</button></div>
     <div class="nav"><h1>后台管理系统</h1></div>
     <iframe name="ifm" src="salary_v.html"></iframe>
-    <ul class="nav">
+    <ul class="nav" id="navCol">
         <li><a href="salary_v.html" target="ifm">员工信息</a></li>
         <li><a href="employee.html" target="ifm">员工管理</a></li>
         <li><a href="salary.html" target="ifm">工资管理</a></li>
         <li><a href="attendance.html" target="ifm">考勤管理</a></li>
         <li><a href="deduction.html" target="ifm">代扣项目</a></li>
     </ul>
-<script>
-
-</script>
+<script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>

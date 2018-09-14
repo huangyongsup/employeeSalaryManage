@@ -1,0 +1,61 @@
+body{
+    background:white;
+}
+
+table, th, td{
+    margin: 0 auto;
+    border: 2px solid black;
+    border-collapse: collapse;
+    text-align: center;
+    padding: 8px;
+}
+
+tr:nth-child(even){
+    background: silver;
+}
+
+tr:hover{
+    background: red;
+}
+
+#previousPage, #nextPage{
+    position: absolute;
+    left: 200px;
+    top: 400px;
+    padding: 10px 50px;
+    margin: 10px 80px;
+}
+
+#nextPage{
+    left: 450px;
+}
+button{
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.5s ease-in-out;
+}
+
+#dialog, #add-dialog{
+    display: none;
+    position: absolute;
+    left: 200px;
+    top: 100px;
+    /*background-color: rgba(0, 0, 0, 0.3);*/
+    background: silver;
+    width: 500px;
+    height: 300px;
+}
+
+
+
+#confirmBtn, #add-btn{
+    display: block;
+    float: left;
+    padding: 15px;
+}
+
+#cancelBtn, #cancel-btn{
+    display: block;
+    float: right;
+    padding: 20px;
+}

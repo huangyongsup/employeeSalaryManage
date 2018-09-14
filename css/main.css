@@ -1,61 +1,65 @@
 body{
-    background:white;
+    background: #282e33;
+    font-family: 'Open Sans', Arial, sans-serif;
+    color: silver;
 }
 
-table, th, td{
-    margin: 0 auto;
-    border: 2px solid black;
-    border-collapse: collapse;
+li {
+    display: block;
+    width: 150px;
     text-align: center;
-    padding: 8px;
-}
-
-tr:nth-child(even){
-    background: silver;
-}
-
-tr:hover{
-    background: red;
-}
-
-#previousPage, #nextPage{
-    position: absolute;
-    left: 200px;
-    top: 400px;
-    padding: 10px 50px;
-    margin: 10px 80px;
-}
-
-#nextPage{
-    left: 450px;
-}
-button{
+    margin: 2px 20px;
+    border: 2px solid #a1a1a1;
+    color: white;
+    background: #b5cd60;
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.5s ease-in-out;
 }
 
-#dialog, #add-dialog{
-    display: none;
-    position: absolute;
-    left: 200px;
-    top: 100px;
-    /*background-color: rgba(0, 0, 0, 0.3);*/
-    background: silver;
-    width: 500px;
-    height: 300px;
+a{
+    color: white;
+    background: #b5cd60;
+    cursor: pointer;
+    transition: background 0.5s ease-in-out;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    height: 100%;
+    width: 100%;
 }
 
-
-
-#confirmBtn, #add-btn{
-    display: block;
-    float: left;
-    padding: 15px;
+a:hover, button:hover {
+    background: #16aa56;
 }
 
-#cancelBtn, #cancel-btn{
-    display: block;
+button{
+    border: 0;
+    border-radius: 5px;
+    background: red;
+    margin: 10px 20px;
+    cursor: pointer;
+    transition: background 0.5s ease-in-out;
+}
+
+button:hover{
+    background: red;
+}
+
+iframe{
     float: right;
-    padding: 20px;
+    height: 480px;
+    width: 1010px;
+}
+
+.nav{
+    margin: 20px 5px;
+}
+
+#signOut{
+    float: right;
+}
+
+.extra{
+    background: #16aa56;
 }
